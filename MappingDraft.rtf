@@ -13,17 +13,19 @@ Event(\ul EventID\ulnone , Subject, Date, Time, RegistrationFee, Room, Building,
 Project(\ul ProjectCode\ulnone , Name, Budget, 
 \f1\b GroupID
 \f0\b0 )\
-Member(\ul StudentID\ulnone , Name, MemberType) // Membertype could be either alumnus or student\
+Member(\ul MemberID\ulnone , Name, MemberType) // Membertype could be either alumnus or student\
 Club_Group(
 \f1\b \ul ClubID
 \f0\b0 , GroupID\ulnone , name head)\
 Member_Joins_Group(
-\f1\b \ul StudentID, GroupID
+\f1\b \ul MemberID, GroupID
 \f0\b0 \ulnone )\
 Member_WorksOn_Project(
-\f1\b \ul StudentID, ProjectCode
+\f1\b \ul MemberID, ProjectCode
 \f0\b0 \ulnone , MemberPortion)\
-\
+Alumnus_WorkHistory(
+\f1\b \ul MemberID,
+\f0\b0 \ulnone  Company, Position, StartDate, EndDate)\
 \
 \
 }
