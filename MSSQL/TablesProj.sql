@@ -14,7 +14,7 @@ CREATE TABLE Member (
 CREATE TABLE Club (
     ClubID INT,
     MemberID INT,
-    ClubName VARCHAR(30) NOT NULL,
+    ClubName VARCHAR(30) UNIQUE NOT NULL,
 
     PRIMARY KEY (ClubID),
     FOREIGN KEY (MemberID) REFERENCES Member(MemberID)
@@ -35,7 +35,7 @@ CREATE TABLE Events (
     EventID INT,
     ClubID INT,
     GroupID INT,
-    EventSubject VARCHAR(15) UNIQUE,
+    EventSubject VARCHAR(15) UNIQUE NOT NULL,
     EventDate DATE,
     EventTime TIME,
     RegistrationFee FLOAT,
