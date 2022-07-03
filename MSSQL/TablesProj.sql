@@ -1,6 +1,11 @@
 CREATE DATABASE ProjectSQL;
 USE ProjectSQL;
 
+
+
+
+
+
 CREATE TABLE Member (
     MemberID INT,
     FirstName VARCHAR(15) NOT NULL,
