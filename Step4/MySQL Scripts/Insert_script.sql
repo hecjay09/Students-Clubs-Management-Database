@@ -2,26 +2,26 @@
 USE Project_Gr8_Student_Club;
 
 -- Member: 20 records
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001002,'Yan Fung Yenny','Hou','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001003,'Blanche','Sitznski','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001004,'Natasha','Romanoff','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001005,'Landi','Umberto','A');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001006,'Fred','Myers','A');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001007,'Marc','Scott','A');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001008,'Hugo','Etherlinck','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001009,'Mora','Cathrine ','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001010,'Scott ','Summers','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001011,'Yuriko','Oyama','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001012,'Wilson','Wade','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001013,'Bram ','Velsing','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001014,'Daisy ','Johnson','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001015,'Elektra','Natchios','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001016,'Max','Dillon','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001017,'Ivory ','Shadow','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001018,'Dan','Rubenstein','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001019,'Norman','Osborn','S');
-INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001020,'Jack','Danner','A');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001002,'Yan Fung Yenny','Hou','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001003,'Blanche','Sitznski','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001004,'Natasha','Romanoff','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001005,'Landi','Umberto','AL');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001006,'Fred','Myers','AL');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001007,'Marc','Scott','AL');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001008,'Hugo','Etherlinck','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001009,'Mora','Cathrine ','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001010,'Scott ','Summers','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001011,'Yuriko','Oyama','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001012,'Wilson','Wade','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001013,'Bram ','Velsing','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001014,'Daisy ','Johnson','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001015,'Elektra','Natchios','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001016,'Max','Dillon','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001017,'Ivory ','Shadow','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001018,'Dan','Rubenstein','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001019,'Norman','Osborn','ST');
+INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001020,'Jack','Danner','AL');
 
 -- Club: 4 records
 INSERT INTO Club (ClubID, LeadMemberID, ClubName) VALUES (1000,10001001,'Computing Club');
@@ -43,13 +43,13 @@ INSERT INTO Club_Group (ClubID, GroupID, HeadMemberID, GroupName) VALUES (4000,1
 INSERT INTO Club_Group (ClubID, GroupID, HeadMemberID, GroupName) VALUES (4000,2,10001014,'Latin');
 
 -- Event: 7 records
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (101,1000,1,'How to write your first Java program','2022/06/15','12:30:00',5,'A',1,'122A');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (102,1000,2,'Java Summer Code Camp','2022/07/04','09:30:00',5,'B',0,'019');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (103,1000,2,'Biology Club Orientation - Plant Research','2022/08/06','09:30:00',20,'A',1,'122A');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (201,2000,1,'Biology Club Orientation - Insect Research','2022/08/16','10:00:00',0,'T',5,'530');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (202,2000,2,'Biology Club Orientation - Animal Research','2022/08/16','10:00:00',0,'T',5,'530');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (203,2000,3,'Latin Competition','2022/08/16','10:00:00',0,'T',5,'530');
-INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (401,4000,1,'','2022/09/20','08:30:00',10,'G',1,'105');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (101,1000,1,'Become a Data Analyst','2022/06/15','12:30:00',5,'A',1,'122A');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (102,1000,2,'How to write your first Java program','2022/07/04','09:30:00',5,'B',0,'019');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (103,1000,2,'Java Summer Code Camp','2022/08/06','09:30:00',20,'A',1,'122A');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (201,2000,1,'Biology Club Orientation - Plant Research','2022/08/16','10:00:00',0,'T',5,'530');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (202,2000,2,'Biology Club Orientation - Insect Research','2022/08/16','10:00:00',0,'T',5,'530');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (203,2000,3,'Biology Club Orientation - Animal Research','2022/08/16','10:00:00',0,'T',5,'530');
+INSERT INTO Event (EventID, ClubID, GroupID, EventSubject, EventDate, EventTime, RegistrationFee, Building, BuildingFloor, Room) VALUES (401,4000,1,'Latin Competition','2022/09/20','08:30:00',10,'G',1,'105');
 
 -- Project: 6 records
 INSERT INTO Project (ProjectCode, ClubID, GroupID, ProjectName, Budget) VALUES ('COMP001',1000,1,'Database Migration',6000);
@@ -98,9 +98,10 @@ INSERT INTO Member_WorksOn_Project (MemberID, ProjectCode, MemberPortion) VALUES
 INSERT INTO Member_WorksOn_Project (MemberID, ProjectCode, MemberPortion) VALUES (10001015,'SPT001',500);
 INSERT INTO Member_WorksOn_Project (MemberID, ProjectCode, MemberPortion) VALUES (10001011,'SPT001',500);
 
--- Alumnus_WorkHistory: 4 records
-INSERT INTO Alumnus_WorkHistory (AlumnusID, Company, Position, StartDate, EndDate) VALUES (10001006,'Google','Software Engineer','2018/10/01','2021/09/30');
-INSERT INTO Alumnus_WorkHistory (AlumnusID, Company, Position, StartDate, EndDate) VALUES (10001006,'Facebook','Full Stack Web Developer','2021/11/01',NULL);
-INSERT INTO Alumnus_WorkHistory (AlumnusID, Company, Position, StartDate, EndDate) VALUES (10001007,'Yahoo','Data Analyst','2020/09/01',NULL);
-INSERT INTO Alumnus_WorkHistory (AlumnusID, Company, Position, StartDate, EndDate) VALUES (10001005,'Amazon','System Analyst','2021/04/01',NULL);
+-- Alumnus_WorkHistory: 5 records
+INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001006,1,'Google','Software Engineer','2018/10/01','2021/09/30');
+INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001006,2,'Facebook','Full Stack Web Developer','2021/11/01',NULL);
+INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001007,1,'Yahoo','Data Analyst','2020/09/01',NULL);
+INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001005,1,'Amazon','Software Engineer','2019/08/01','2020/07/31');
+INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001005,2,'Amazon','System Analyst','2021/04/01',NULL);
 
