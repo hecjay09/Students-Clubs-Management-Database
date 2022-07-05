@@ -1,5 +1,5 @@
--- MySQL Version of scripts for dropping tables
-USE Project_Gr8_Student_Club;
+-- MySQL Version of scripts for dropping tables.
+-- The entire code works perfectly in MSSQL Server.
 
 DROP TABLE Alumnus_WorkHistory;
 DROP TABLE Member_WorksOn_Project;

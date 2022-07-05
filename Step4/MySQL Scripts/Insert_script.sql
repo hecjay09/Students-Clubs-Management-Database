@@ -1,5 +1,5 @@
--- MySQL Version of scripts for inserting data to tables
-USE Project_Gr8_Student_Club;
+-- MySQL Version of scripts for inserting data to tables.
+-- The entire code works perfectly in MSSQL Server.
 
 -- Member: 20 records
 INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','ST');
