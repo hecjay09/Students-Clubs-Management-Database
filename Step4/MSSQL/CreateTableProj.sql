@@ -85,14 +85,14 @@ CREATE TABLE Member_WorksOn_Project (
     FOREIGN KEY (ProjectCode) REFERENCES Project(ProjectCode) ON DELETE CASCADE
 );
 
-
 CREATE TABLE Alumnus_WorkHistory (
     AlumnusID   INT,
+    WorkID      INT,
     Company     VARCHAR(100)    NOT NULL,
     Position    VARCHAR(50)     NOT NULL,
     StartDate   DATE            NOT NULL,
     EndDate     DATE,
 
-    PRIMARY KEY (AlumnusID),
+    PRIMARY KEY (AlumnusID, WorkID),
     FOREIGN KEY (AlumnusID) REFERENCES Member(MemberID) ON DELETE CASCADE
 );
