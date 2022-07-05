@@ -1,8 +1,12 @@
 -- MySQL Version of scripts for creating tables
-CREATE DATABASE Project_Gr8_Student_Club;
+--
+-- The feature constraint check in table 'Member' and 'Event' works in MSSQL but doesn't work in MySQL 
+-- because it doesn't support constraint check.
+-- The code does not throw error in both MySQL and MSSQL.
+
 USE Project_Gr8_Student_Club;
 
--- Constraint check does not support in MySQL and the SQL run successfully without error in MySQL.
+
 CREATE TABLE Member (
     MemberID    INT,
     FirstName   VARCHAR(25) NOT NULL,
@@ -36,7 +40,6 @@ CREATE TABLE Club_Group (
 );
 
 
--- Constraint check does not support in MySQL and the SQL run successfully without error in MySQL.
 CREATE TABLE Event (
     EventID         INT,
     ClubID          INT,
@@ -81,7 +84,7 @@ CREATE TABLE Member_Joins_Group (
 CREATE TABLE Member_WorksOn_Project (
     MemberID        INT,
     ProjectCode     VARCHAR(10),
-    MemberPortion   NUMERIC DEFAULT 0,
+    MemberPortion   NUMERIC(10,2),
 
     PRIMARY KEY (MemberID, ProjectCode),
     FOREIGN KEY (MemberID) REFERENCES Member(MemberID) ON DELETE CASCADE,
