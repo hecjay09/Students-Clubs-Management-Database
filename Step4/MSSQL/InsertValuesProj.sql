@@ -1,5 +1,7 @@
 USE ProjectSQL;
 
+--all scripts work on my mssql
+
 -- Member: 20 records
 INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','ST');
 INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001002,'Yan Fung Yenny','Hou','ST');
@@ -106,25 +108,25 @@ INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate
 
 
 SELECT *
-FROM Member
+FROM Member;
 
 SELECT *
-FROM Club
+FROM Club;
 
 SELECT *
-FROM Club_Group
+FROM Club_Group;
 
 SELECT *
-FROM Event
+FROM Event;
 
 SELECT *
-FROM Project
+FROM Project;
 
 SELECT *
-FROM Member_Joins_Group
+FROM Member_Joins_Group;
 
 SELECT *
-FROM Member_WorksOn_Project
+FROM Member_WorksOn_Project;
 
 SELECT *
-FROM Alumnus_WorkHistory
+FROM Alumnus_WorkHistory;

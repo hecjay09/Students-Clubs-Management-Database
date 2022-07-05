@@ -1,6 +1,8 @@
 CREATE DATABASE ProjectSQL;
 USE ProjectSQL;
 
+-- all scripts work on mssql
+
 CREATE TABLE Member (
     MemberID    INT,
     FirstName   VARCHAR(25) NOT NULL,
