@@ -1,6 +1,6 @@
 USE ProjectSQL;
 
---all scripts work on my mssql
+--The entire code works perfectly on MySQL.
 
 -- Member: 20 records
 INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','ST');
