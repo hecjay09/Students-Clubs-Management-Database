@@ -1,7 +1,8 @@
 CREATE DATABASE ProjectSQL;
 USE ProjectSQL;
 
--- all scripts work on mssql
+--The entire code except the constraint check works perfectly on MySQL.
+--The constraint check is not supported by MySQL but it doesn't throw error as well.
 
 CREATE TABLE Member (
     MemberID    INT,

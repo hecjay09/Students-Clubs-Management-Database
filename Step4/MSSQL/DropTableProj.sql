@@ -1,5 +1,5 @@
 USE ProjectSQL;
---all scripts work on my mssql
+--The entire code works perfectly on MySQL.
 
 DROP TABLE Alumnus_WorkHistory;
 DROP TABLE Member_WorksOn_Project;
