@@ -2,10 +2,8 @@
 --
 -- The feature constraint check in table 'Member' and 'Event' works in MSSQL but doesn't work in MySQL 
 -- because it doesn't support constraint check.
--- The code does not throw error in both MySQL and MSSQL.
-
-USE Project_Gr8_Student_Club;
-
+-- 
+-- The entire code works perfectly in MSSQL Server.
 
 CREATE TABLE Member (
     MemberID    INT,
