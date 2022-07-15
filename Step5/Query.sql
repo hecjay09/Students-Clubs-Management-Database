@@ -4,7 +4,12 @@
 1. A view of all members with their corresponding club and group 
 (CREATE VIEW, and update other related SQL to use this view)
 ----------------------------------------------------------------------------------------------------*/
-
+CREATE VIEW Members_Club_Group AS
+SELECT M.FirstName, M.LastName, C.ClubName, CG.GroupName,
+FROM Member M, Member_Joins_Group MJG, Club C,Club_Group CG
+WHERE (M.MemberID = MJG.MemberID) AND
+        (MJG.ClubID = C.ClubID) AND
+        (MJG.GroupID = CG.GroupID);
 
 /* --------------------------------------------------------------------------------------------------
 2. Display the information of all the clubs and corresponding groups.
@@ -159,41 +164,52 @@ NATURAL JOIN
 /* --------------------------------------------------------------------------------------------------
 13. Display alumnus that has more than 6 months working experience.
 ----------------------------------------------------------------------------------------------------*/
-
+SELECT FirstName, LastName, Company, StartDate, EndDate, DATEDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
+FROM Member M JOIN Alumnus_WorkHistory AW ON M.MemberID = AW.AlumnusID
+WHERE DATEDIFF(MONTH, StartDate, EndDate) > 6;
 
 /* --------------------------------------------------------------------------------------------------
 14. Past events (CREATE VIEW)
 ----------------------------------------------------------------------------------------------------*/
-
-
+CREATE VIEW Past_Events AS
+SELECT EventID, EventSubject, EventDate
+FROM Event
+WHERE EventDate < SYSDATETIME();
 /* --------------------------------------------------------------------------------------------------
 15. An alumnus quits a job (UPDATE enddate)
 ----------------------------------------------------------------------------------------------------*/
-
-
-/* --------------------------------------------------------------------------------------------------
-16. Add an existing member to a new group. (UPDATE)
-----------------------------------------------------------------------------------------------------*/
-
+UPDATE Alumnus_WorkHistory
+SET EndDate = '2022-06-15'
+WHERE AlumnusID = 10001007 AND Company = 'Yahoo'
 
 /* --------------------------------------------------------------------------------------------------
-17. Raise the member's portion on specific project. (UPDATE)
+16. Switch a member's current group to a new group. (UPDATE)
 ----------------------------------------------------------------------------------------------------*/
-
+UPDATE Member_Joins_Group
+SET GroupID = 2
+WHERE MemberID = 10001020 AND ClubID = 2000;
+/* --------------------------------------------------------------------------------------------------
+17. Every member that is working on Comp001 project, their MemberPortion got raised by $250. (UPDATE)
+----------------------------------------------------------------------------------------------------*/
+UPDATE Member_WorksOn_Project
+SET MemberPortion = MemberPortion + 250.00
+WHERE ProjectCode = 'COMP001'
 
 /* --------------------------------------------------------------------------------------------------
 18. A group cancels an event (DELETE)
 ----------------------------------------------------------------------------------------------------*/
-
-
+DELETE FROM Event
+WHERE EventID = 203;
 
 /* --------------------------------------------------------------------------------------------------
 19. Delete a project, related members records are also deleted (DELETE)
 ----------------------------------------------------------------------------------------------------*/
-
-
+DELETE FROM Project
+WHERE ProjectCode = 'SPT001'
 
 /* --------------------------------------------------------------------------------------------------
 20. Delete a member that doesn't work on any project (DELETE)
 ----------------------------------------------------------------------------------------------------*/
-
+DELETE M
+FROM Member M LEFT JOIN Member_WorksOn_Project MWP ON M.MemberID = MWP.MemberID
+WHERE ProjectCode IS NULL;
