@@ -5,11 +5,13 @@
 (CREATE VIEW, and update other related SQL to use this view)
 ----------------------------------------------------------------------------------------------------*/
 CREATE VIEW Members_Club_Group AS
-SELECT M.FirstName, M.LastName, C.ClubName, CG.GroupName,
-FROM Member M, Member_Joins_Group MJG, Club C,Club_Group CG
-WHERE (M.MemberID = MJG.MemberID) AND
-        (MJG.ClubID = C.ClubID) AND
-        (MJG.GroupID = CG.GroupID);
+SELECT m.MemberID, m.FirstName, m.LastName, m.MemberType, c.ClubID, c.ClubName, cg.GroupID, cg.GroupName
+FROM Member m, Member_Joins_Group mjg, Club c, Club_Group cg
+WHERE mjg.MemberID = m.MemberID
+AND c.ClubID = mjg.ClubID
+AND cg.ClubID = mjg.ClubID AND cg.GroupID = mjg.GroupID
+ORDER BY MemberID;
+
 
 /* --------------------------------------------------------------------------------------------------
 2. Display the information of all the clubs and corresponding groups.
@@ -69,15 +71,12 @@ WHERE NOT EXISTS (
 
 
 /* --------------------------------------------------------------------------------------------------
-6. Display member who has join more than one group.
+6. Display member who has join more than one group. Using the view Member_Joins_Group previously 
+created.
 ----------------------------------------------------------------------------------------------------*/
-SELECT m.MemberID, m.FirstName, m.LastName, c.ClubName, cg.GroupName
-FROM Member m, Member_Joins_Group mjg, Club_Group cg, Club c
-WHERE m.MemberID = mjg.MemberID
-AND mjg.ClubID = cg.ClubID
-AND mjg.GroupID = cg.GroupID
-AND cg.ClubID = c.ClubID
-AND m.MemberID IN (
+SELECT mcg.MemberID, mcg.FirstName, mcg.LastName, mcg.ClubName, mcg.GroupName
+FROM Members_Club_Group mcg
+WHERE mcg.MemberID IN (
     SELECT MemberID
     FROM Member_Joins_Group
     GROUP BY MemberID
@@ -86,7 +85,7 @@ AND m.MemberID IN (
 
 
 /* --------------------------------------------------------------------------------------------------
-7. Display the group information and the events which are held on either Building 'A' or Building 'T'
+7. Display the group information and the events which are held on either Building 'A' or Building 'T'.
 ----------------------------------------------------------------------------------------------------*/
 SELECT c.ClubName, cg.GroupName, e.EventSubject, e.EventDate, e.EventTime, 
     e.RegistrationFee, e.Building, e.Room
@@ -121,7 +120,7 @@ LEFT JOIN Project p ON p.ClubID = cg.ClubID AND p.GroupID = cg.GroupID;
 
 
 /* --------------------------------------------------------------------------------------------------
-10. Display member who does not work on any funded project 
+10. Display member who does not work on any funded project.
 ----------------------------------------------------------------------------------------------------*/
 SELECT m.MemberID, m.FirstName, m.LastName, m.MemberType
 FROM Member m
@@ -148,7 +147,7 @@ AND mwp.MemberPortion < (
 
 /* --------------------------------------------------------------------------------------------------
 12. Display the project budget, its total amount of member portion assigned, and also the remaining 
-budget. 
+budget.
 ----------------------------------------------------------------------------------------------------*/
 SELECT p.ProjectCode, p.ProjectName, p.Budget, pb.TotalMemberPortion, 
     (p.Budget - pb.TotalMemberPortion) AS 'RemainingBudget'
@@ -164,52 +163,123 @@ NATURAL JOIN
 /* --------------------------------------------------------------------------------------------------
 13. Display alumnus that has more than 6 months working experience.
 ----------------------------------------------------------------------------------------------------*/
-SELECT FirstName, LastName, Company, StartDate, EndDate, DATEDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
-FROM Member M JOIN Alumnus_WorkHistory AW ON M.MemberID = AW.AlumnusID
-WHERE DATEDIFF(MONTH, StartDate, EndDate) > 6;
+-- SELECT FirstName, LastName, Company, StartDate, EndDate, DATEDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
+-- FROM Member M JOIN Alumnus_WorkHistory AW ON M.MemberID = AW.AlumnusID
+-- WHERE DATEDIFF(MONTH, StartDate, EndDate) > 6;
+
+
+/* 
+Yenny: 
+Below work in mysql, please check if either one work in mssql 
+Notes: 
+1) datediff(MONTH, sd, ed) is not working on MySQL. MySQL can use timestampdiff(Month, sd, ed)
+
+2) I think using datediff or timestampdiff doesn't really reflect on month because it only count 11 monthes for the first member
+but it is more realistic if it counts as 12
+
+3) we also need to count those whose work doesn't have end date (null), that means currently working.
+According to the test data, all of alumni works more than 6 months, so I suggest to change the description to 
+'more than or equal to 12 months' so we can filter out one record
+
+*/
+-- So this one is most prefer, dividing the date difference by 30.5 days a month (average day of month in a year) and then round it.
+-- see if this works in MSSQL
+-- 4 records retrieved
+SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
+FROM Member m
+JOIN (
+    SELECT AlumnusID, Company, StartDate, Enddate, ROUND(DATEDIFF(EndDate, StartDate)/30.5) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NOT NULL
+    UNION
+    SELECT AlumnusID, Company, StartDate, Enddate, ROUND(DATEDIFF(SYSDATE(), StartDate)/30.5) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NULL
+) aw
+ON m.MemberID = aw.AlumnusID
+AND MonthsWorking >= 12;
+
+
+-- this one using timestampdiff and work in MySQL, but it count 11 months for first member, so it is filtered out
+-- 3 records retrieved
+SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
+FROM Member m
+JOIN (
+    SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NOT NULL
+    UNION
+    SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, SYSDATE()) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NULL
+) aw
+ON m.MemberID = aw.AlumnusID
+AND MonthsWorking >= 12;
+
+
+
 
 /* --------------------------------------------------------------------------------------------------
-14. Past events (CREATE VIEW)
+14. A view on past events.
 ----------------------------------------------------------------------------------------------------*/
+-- CREATE VIEW Past_Events AS
+-- SELECT EventID, EventSubject, EventDate
+-- FROM Event
+-- WHERE EventDate < SYSDATETIME();
+
+
+-- Yenny: 
+-- SYSDATETIME not support in MySQL, SYSDATE can return datetime in MySQL using below SQL. Does SYSDATE also
+-- show time on MSSQL?
+-- SELECT SYSDATE() FROM DUAL;
 CREATE VIEW Past_Events AS
 SELECT EventID, EventSubject, EventDate
 FROM Event
-WHERE EventDate < SYSDATETIME();
+WHERE EventDate < SYSDATE();
+
+
 /* --------------------------------------------------------------------------------------------------
-15. An alumnus quits a job (UPDATE enddate)
+15. An alumnus quits a job.
 ----------------------------------------------------------------------------------------------------*/
 UPDATE Alumnus_WorkHistory
 SET EndDate = '2022-06-15'
-WHERE AlumnusID = 10001007 AND Company = 'Yahoo'
+WHERE AlumnusID = 10001007 AND WorkID = 1
+
 
 /* --------------------------------------------------------------------------------------------------
-16. Switch a member's current group to a new group. (UPDATE)
+16. Switch a member's current group to a new group.
 ----------------------------------------------------------------------------------------------------*/
 UPDATE Member_Joins_Group
 SET GroupID = 2
 WHERE MemberID = 10001020 AND ClubID = 2000;
+
+
 /* --------------------------------------------------------------------------------------------------
-17. Every member that is working on Comp001 project, their MemberPortion got raised by $250. (UPDATE)
+17. Every member that is working on COMP001 project, their MemberPortion got raised by $250.
 ----------------------------------------------------------------------------------------------------*/
 UPDATE Member_WorksOn_Project
 SET MemberPortion = MemberPortion + 250.00
 WHERE ProjectCode = 'COMP001'
 
+
 /* --------------------------------------------------------------------------------------------------
-18. A group cancels an event (DELETE)
+18. A group cancels an event.
 ----------------------------------------------------------------------------------------------------*/
 DELETE FROM Event
 WHERE EventID = 203;
 
+
 /* --------------------------------------------------------------------------------------------------
-19. Delete a project, related members records are also deleted (DELETE)
+19. Delete a project, related members records are also deleted.
 ----------------------------------------------------------------------------------------------------*/
 DELETE FROM Project
 WHERE ProjectCode = 'SPT001'
 
+
 /* --------------------------------------------------------------------------------------------------
-20. Delete a member that doesn't work on any project (DELETE)
+20. Delete all member that doesn't work on any project.
 ----------------------------------------------------------------------------------------------------*/
 DELETE M
 FROM Member M LEFT JOIN Member_WorksOn_Project MWP ON M.MemberID = MWP.MemberID
 WHERE ProjectCode IS NULL;
+
