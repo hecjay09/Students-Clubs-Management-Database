@@ -1,18 +1,20 @@
 -- The entire code works perfectly in both MSSQL Server and MySQL DB.
 USE ProjectSQL;
+
 /* --------------------------------------------------------------------------------------------------
 1. A view of all members with their corresponding club and group 
 (CREATE VIEW, and update other related SQL to use this view)
 
-This query is not working on ms sql
+This query is not working on ms sql.
+Yenny: now remove the "order by" should work on MSSQL. Can you please try again?
 ----------------------------------------------------------------------------------------------------*/
 CREATE VIEW Members_Club_Group AS
 SELECT m.MemberID, m.FirstName, m.LastName, m.MemberType, c.ClubID, c.ClubName, cg.GroupID, cg.GroupName
 FROM Member m, Member_Joins_Group mjg, Club c, Club_Group cg
 WHERE mjg.MemberID = m.MemberID
 AND c.ClubID = mjg.ClubID
-AND cg.ClubID = mjg.ClubID AND cg.GroupID = mjg.GroupID
-ORDER BY MemberID;
+AND cg.ClubID = mjg.ClubID AND cg.GroupID = mjg.GroupID;
+--ORDER BY MemberID;
 
 
 /* --------------------------------------------------------------------------------------------------
@@ -26,25 +28,7 @@ FROM Club c INNER JOIN Club_Group cg ON cg.ClubID = c.ClubID;
 3. Display the group that has the least members
 ----------------------------------------------------------------------------------------------------*/
 SELECT c.ClubID, c.ClubName, cg.GroupID, cg.GroupName
-FROM Club c, Club_Group cg, 
-(
-    SELECT ClubID, GroupID 
-    FROM Member_Joins_Group 
-    GROUP BY ClubID, GroupID
-    HAVING COUNT(MemberID) = 
-    (
-        SELECT MIN(NoOfMember)
-        FROM 
-        (
-            SELECT ClubID, GroupID, COUNT(MemberID) AS 'NoOfMember'
-            FROM Member_Joins_Group
-            GROUP BY ClubID, GroupID
-        ) g
-    )
-) gm
-WHERE cg.ClubID = c.ClubID
-AND gm.ClubID = cg.ClubID 
-AND gm.GroupID = cg.GroupID;
+FROM Club c INNER JOIN Club_Group cg ON cg.ClubID = c.ClubID;
 
 
 /* --------------------------------------------------------------------------------------------------
@@ -73,17 +57,17 @@ WHERE NOT EXISTS (
 
 
 /* --------------------------------------------------------------------------------------------------
-6. Display member who has join more than one group. Using the view Member_Joins_Group previously 
-created.
+6. Display member who has join more than one group. 
 ----------------------------------------------------------------------------------------------------*/
-SELECT mcg.MemberID, mcg.FirstName, mcg.LastName, mcg.ClubName, mcg.GroupName
-FROM Members_Club_Group mcg
-WHERE mcg.MemberID IN (
+SELECT m.MemberID, m.FirstName, m.LastName, m.ClubName, m.GroupName
+FROM Members_Club_Group m
+WHERE m.MemberID IN (
     SELECT MemberID
     FROM Member_Joins_Group
     GROUP BY MemberID
     HAVING COUNT(GroupID) > 1
-);
+)
+ORDER BY m.MemberID ASC;
 
 
 /* --------------------------------------------------------------------------------------------------
@@ -103,12 +87,13 @@ AND cg.ClubID = c.ClubID;
 /* --------------------------------------------------------------------------------------------------
 8. Display the future events that member can join according to their group.
 ----------------------------------------------------------------------------------------------------*/
+-- Yenny: Now change to CURRENT_TIMESTAMP and should work on MSSQL, can ou please try again?
 SELECT DISTINCT m.MemberID, m.FirstName, m.LastName, e.EventSubject
 FROM Member m, Member_Joins_Group mjg, Event e
 WHERE m.MemberID = mjg.MemberID
 AND mjg.ClubID = e.ClubID
 AND mjg.GroupID = e.GroupID
-AND e.EventDate > SYSDATE()
+AND e.EventDate > CURRENT_TIMESTAMP
 ORDER BY m.MemberID;
 
 /*This version only works on mssql*/
@@ -162,29 +147,17 @@ budget.
 SELECT p.ProjectCode, p.ProjectName, p.Budget, pb.TotalMemberPortion, 
     (p.Budget - pb.TotalMemberPortion) AS 'RemainingBudget'
 FROM Project p
-NATURAL JOIN
-(
-    SELECT ProjectCode, SUM(MemberPortion) AS 'TotalMemberPortion'
-    FROM Member_WorksOn_Project
-    GROUP BY ProjectCode
-) pb;
-
-/*MS SQL Version of the query*/
-SELECT p.ProjectCode, p.ProjectName, p.Budget, pb.TotalMemberPortion, 
-    (p.Budget - pb.TotalMemberPortion) AS 'RemainingBudget'
-FROM Project p
     JOIN
 (
     SELECT ProjectCode, SUM(MemberPortion) AS 'TotalMemberPortion'
     FROM Member_WorksOn_Project
     GROUP BY ProjectCode
 ) pb
-
-    ON p.ProjectCode = pb.ProjectCode;
+ON p.ProjectCode = pb.ProjectCode;
 
 
 /* --------------------------------------------------------------------------------------------------
-13. Display alumnus that has more than 6 months working experience.
+13. Display alumnus that has more than or equal to 12 months working experience.
 ----------------------------------------------------------------------------------------------------*/
 -- SELECT FirstName, LastName, Company, StartDate, EndDate, DATEDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
 -- FROM Member M JOIN Alumnus_WorkHistory AW ON M.MemberID = AW.AlumnusID
@@ -208,19 +181,24 @@ According to the test data, all of alumni works more than 6 months, so I suggest
 -- So this one is most prefer, dividing the date difference by 30.5 days a month (average day of month in a year) and then round it.
 -- see if this works in MSSQL
 -- 4 records retrieved
+-- Yenny: now change to use Month, Year which should be supported by MSSQL. This one should return 11 month same as DATEDIFF(MONTH, date, date).
+-- Can you please try again?
 SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
 FROM Member m
 JOIN (
-    SELECT AlumnusID, Company, StartDate, Enddate, ROUND(DATEDIFF(EndDate, StartDate)/30.5) AS MonthsWorking
+    SELECT AlumnusID, Company, StartDate, Enddate, 
+        ((MONTH(EndDate)-MONTH(StartDate))+(YEAR(EndDate)-YEAR(StartDate))*12) AS MonthsWorking
     FROM Alumnus_WorkHistory
     WHERE EndDate IS NOT NULL
     UNION
-    SELECT AlumnusID, Company, StartDate, Enddate, ROUND(DATEDIFF(SYSDATE(), StartDate)/30.5) AS MonthsWorking
+    SELECT AlumnusID, Company, StartDate, Enddate,
+        ((MONTH(CURRENT_TIMESTAMP)-MONTH(StartDate))+(YEAR(CURRENT_TIMESTAMP)-YEAR(StartDate))*12) AS MonthsWorking
     FROM Alumnus_WorkHistory
     WHERE EndDate IS NULL
 ) aw
 ON m.MemberID = aw.AlumnusID
 AND MonthsWorking >= 12;
+
 
 /*This version only works on ms sql*/
 SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
@@ -243,19 +221,20 @@ FROM Alumnus_WorkHistory;
 -- this one using timestampdiff and work in MySQL, but it count 11 months for first member, so it is filtered out
 -- 3 records retrieved
 -- Hector: maybe just do the query above then?
-SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
-FROM Member m
-JOIN (
-    SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
-    FROM Alumnus_WorkHistory
-    WHERE EndDate IS NOT NULL
-    UNION
-    SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, SYSDATE()) AS MonthsWorking
-    FROM Alumnus_WorkHistory
-    WHERE EndDate IS NULL
-) aw
-ON m.MemberID = aw.AlumnusID
-AND MonthsWorking >= 12;
+-- Yenny: TIMESTAMPDIFF not work on MSSQL, then we just ignore this.
+-- SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
+-- FROM Member m
+-- JOIN (
+--     SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
+--     FROM Alumnus_WorkHistory
+--     WHERE EndDate IS NOT NULL
+--     UNION
+--     SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, SYSDATE()) AS MonthsWorking
+--     FROM Alumnus_WorkHistory
+--     WHERE EndDate IS NULL
+-- ) aw
+-- ON m.MemberID = aw.AlumnusID
+-- AND MonthsWorking >= 12;
 
 
 /* --------------------------------------------------------------------------------------------------
@@ -270,11 +249,12 @@ AND MonthsWorking >= 12;
 -- Yenny: 
 -- SYSDATETIME not support in MySQL, SYSDATE can return datetime in MySQL using below SQL. Does SYSDATE also
 -- show time on MSSQL? Hector: yes, but it is not very important if it does show time or not.
--- SELECT SYSDATE() FROM DUAL;
+-- Yenny: Now change to CURRENT_TIMESTAMP and should work on MSSQL, can ou please try again?
 CREATE VIEW Past_Events AS
 SELECT EventID, EventSubject, EventDate
 FROM Event
-WHERE EventDate < SYSDATE();
+WHERE EventDate < CURRENT_TIMESTAMP;
+
 
 /*This query only works on ms sql*/
 CREATE VIEW Past_Events AS
