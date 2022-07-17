@@ -16,6 +16,9 @@ AND c.ClubID = mjg.ClubID
 AND cg.ClubID = mjg.ClubID AND cg.GroupID = mjg.GroupID;
 --ORDER BY MemberID;
 
+SELECT *
+FROM Members_Club_Group;
+
 
 /* --------------------------------------------------------------------------------------------------
 2. Display the information of all the clubs and corresponding groups.
@@ -255,16 +258,19 @@ SELECT EventID, EventSubject, EventDate
 FROM Event
 WHERE EventDate < CURRENT_TIMESTAMP;
 
+SELECT *
+FROM Past_Events;
+
+DROP VIEW Past_Events;
+
+SELECT *
+FROM Event;
 
 /*This query only works on ms sql*/
 CREATE VIEW Past_Events AS
 SELECT EventID, EventSubject, EventDate
 FROM Event
 WHERE EventDate < SYSDATETIME();
-
-SELECT *
-FROM Past_Events;
-
 
 /* --------------------------------------------------------------------------------------------------
 15. An alumnus quits a job.
