@@ -1,8 +1,10 @@
 -- The entire code works perfectly in both MSSQL Server and MySQL DB.
-
+USE ProjectSQL;
 /* --------------------------------------------------------------------------------------------------
 1. A view of all members with their corresponding club and group 
 (CREATE VIEW, and update other related SQL to use this view)
+
+This query is not working on ms sql
 ----------------------------------------------------------------------------------------------------*/
 CREATE VIEW Members_Club_Group AS
 SELECT m.MemberID, m.FirstName, m.LastName, m.MemberType, c.ClubID, c.ClubName, cg.GroupID, cg.GroupName
@@ -109,6 +111,14 @@ AND mjg.GroupID = e.GroupID
 AND e.EventDate > SYSDATE()
 ORDER BY m.MemberID;
 
+/*This version only works on mssql*/
+SELECT DISTINCT m.MemberID, m.FirstName, m.LastName, e.EventSubject
+FROM Member m, Member_Joins_Group mjg, Event e
+WHERE m.MemberID = mjg.MemberID
+AND mjg.ClubID = e.ClubID
+AND mjg.GroupID = e.GroupID
+AND e.EventDate > SYSDATETIME()
+ORDER BY m.MemberID; 
 
 /* --------------------------------------------------------------------------------------------------
 9. Display all the groups and whether they are managing any project.
@@ -159,6 +169,19 @@ NATURAL JOIN
     GROUP BY ProjectCode
 ) pb;
 
+/*MS SQL Version of the query*/
+SELECT p.ProjectCode, p.ProjectName, p.Budget, pb.TotalMemberPortion, 
+    (p.Budget - pb.TotalMemberPortion) AS 'RemainingBudget'
+FROM Project p
+    JOIN
+(
+    SELECT ProjectCode, SUM(MemberPortion) AS 'TotalMemberPortion'
+    FROM Member_WorksOn_Project
+    GROUP BY ProjectCode
+) pb
+
+    ON p.ProjectCode = pb.ProjectCode;
+
 
 /* --------------------------------------------------------------------------------------------------
 13. Display alumnus that has more than 6 months working experience.
@@ -199,9 +222,27 @@ JOIN (
 ON m.MemberID = aw.AlumnusID
 AND MonthsWorking >= 12;
 
+/*This version only works on ms sql*/
+SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
+FROM Member m
+JOIN (
+    SELECT AlumnusID, Company, StartDate, Enddate, (DATEDIFF(Month, EndDate, StartDate) * -1) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NOT NULL
+    UNION
+    SELECT AlumnusID, Company, StartDate, Enddate, (DATEDIFF(Month, SYSDATETIME(), StartDate) * -1) AS MonthsWorking
+    FROM Alumnus_WorkHistory
+    WHERE EndDate IS NULL
+) aw
+ON m.MemberID = aw.AlumnusID
+AND MonthsWorking >= 12;
+
+SELECT *
+FROM Alumnus_WorkHistory;
 
 -- this one using timestampdiff and work in MySQL, but it count 11 months for first member, so it is filtered out
 -- 3 records retrieved
+-- Hector: maybe just do the query above then?
 SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
 FROM Member m
 JOIN (
@@ -217,8 +258,6 @@ ON m.MemberID = aw.AlumnusID
 AND MonthsWorking >= 12;
 
 
-
-
 /* --------------------------------------------------------------------------------------------------
 14. A view on past events.
 ----------------------------------------------------------------------------------------------------*/
@@ -230,12 +269,21 @@ AND MonthsWorking >= 12;
 
 -- Yenny: 
 -- SYSDATETIME not support in MySQL, SYSDATE can return datetime in MySQL using below SQL. Does SYSDATE also
--- show time on MSSQL?
+-- show time on MSSQL? Hector: yes, but it is not very important if it does show time or not.
 -- SELECT SYSDATE() FROM DUAL;
 CREATE VIEW Past_Events AS
 SELECT EventID, EventSubject, EventDate
 FROM Event
 WHERE EventDate < SYSDATE();
+
+/*This query only works on ms sql*/
+CREATE VIEW Past_Events AS
+SELECT EventID, EventSubject, EventDate
+FROM Event
+WHERE EventDate < SYSDATETIME();
+
+SELECT *
+FROM Past_Events;
 
 
 /* --------------------------------------------------------------------------------------------------

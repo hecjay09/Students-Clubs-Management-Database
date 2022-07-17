@@ -106,6 +106,7 @@ INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate
 INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001005,1,'Amazon','Software Engineer','2019/08/01','2020/07/31');
 INSERT INTO Alumnus_WorkHistory (AlumnusID, WorkID, Company, Position, StartDate, EndDate) VALUES (10001005,2,'Amazon','System Analyst','2021/04/01',NULL);
 
+USE ProjectSQL;
 
 SELECT *
 FROM Member;
