@@ -4,6 +4,9 @@
 -- because it doesn't support constraint check.
 -- 
 -- The entire code works perfectly in MSSQL Server.
+CREATE DATABASE ProjectSQL;
+USE ProjectSQL;
+
 CREATE TABLE Member (
     MemberID    INT,
     FirstName   VARCHAR(25) NOT NULL,

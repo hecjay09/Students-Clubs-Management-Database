@@ -1,5 +1,6 @@
 -- MySQL Version of scripts for inserting data to tables.
 -- The entire code works perfectly in MSSQL Server.
+USE ProjectSQL;
 
 -- Member: 20 records
 INSERT INTO Member (MemberID, FirstName, LastName, MemberType) VALUES (10001001,'Hector','Onato','ST');

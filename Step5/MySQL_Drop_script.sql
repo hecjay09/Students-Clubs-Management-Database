@@ -1,5 +1,6 @@
 -- MySQL Version of scripts for dropping tables.
 -- The entire code works perfectly in MSSQL Server.
+USE ProjectSQL;
 
 DROP TABLE Alumnus_WorkHistory;
 DROP TABLE Member_WorksOn_Project;

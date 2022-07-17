@@ -2,11 +2,7 @@
 USE ProjectSQL;
 
 /* --------------------------------------------------------------------------------------------------
-1. A view of all members with their corresponding club and group 
-(CREATE VIEW, and update other related SQL to use this view)
-
-This query is not working on ms sql.
-Yenny: now remove the "order by" should work on MSSQL. Can you please try again?
+1. A view of all members with their corresponding club and group.
 ----------------------------------------------------------------------------------------------------*/
 CREATE VIEW Members_Club_Group AS
 SELECT m.MemberID, m.FirstName, m.LastName, m.MemberType, c.ClubID, c.ClubName, cg.GroupID, cg.GroupName
@@ -14,10 +10,6 @@ FROM Member m, Member_Joins_Group mjg, Club c, Club_Group cg
 WHERE mjg.MemberID = m.MemberID
 AND c.ClubID = mjg.ClubID
 AND cg.ClubID = mjg.ClubID AND cg.GroupID = mjg.GroupID;
---ORDER BY MemberID;
-
-SELECT *
-FROM Members_Club_Group;
 
 
 /* --------------------------------------------------------------------------------------------------
@@ -60,7 +52,8 @@ WHERE NOT EXISTS (
 
 
 /* --------------------------------------------------------------------------------------------------
-6. Display member who has join more than one group. 
+6. Display member who has join more than one group. The query is using the view Members_Club_Group
+previously created.
 ----------------------------------------------------------------------------------------------------*/
 SELECT m.MemberID, m.FirstName, m.LastName, m.ClubName, m.GroupName
 FROM Members_Club_Group m
@@ -90,7 +83,6 @@ AND cg.ClubID = c.ClubID;
 /* --------------------------------------------------------------------------------------------------
 8. Display the future events that member can join according to their group.
 ----------------------------------------------------------------------------------------------------*/
--- Yenny: Now change to CURRENT_TIMESTAMP and should work on MSSQL, can ou please try again?
 SELECT DISTINCT m.MemberID, m.FirstName, m.LastName, e.EventSubject
 FROM Member m, Member_Joins_Group mjg, Event e
 WHERE m.MemberID = mjg.MemberID
@@ -98,15 +90,7 @@ AND mjg.ClubID = e.ClubID
 AND mjg.GroupID = e.GroupID
 AND e.EventDate > CURRENT_TIMESTAMP
 ORDER BY m.MemberID;
-
-/*This version only works on mssql*/
-SELECT DISTINCT m.MemberID, m.FirstName, m.LastName, e.EventSubject
-FROM Member m, Member_Joins_Group mjg, Event e
-WHERE m.MemberID = mjg.MemberID
-AND mjg.ClubID = e.ClubID
-AND mjg.GroupID = e.GroupID
-AND e.EventDate > SYSDATETIME()
-ORDER BY m.MemberID; 
+ 
 
 /* --------------------------------------------------------------------------------------------------
 9. Display all the groups and whether they are managing any project.
@@ -162,30 +146,6 @@ ON p.ProjectCode = pb.ProjectCode;
 /* --------------------------------------------------------------------------------------------------
 13. Display alumnus that has more than or equal to 12 months working experience.
 ----------------------------------------------------------------------------------------------------*/
--- SELECT FirstName, LastName, Company, StartDate, EndDate, DATEDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
--- FROM Member M JOIN Alumnus_WorkHistory AW ON M.MemberID = AW.AlumnusID
--- WHERE DATEDIFF(MONTH, StartDate, EndDate) > 6;
-
-
-/* 
-Yenny: 
-Below work in mysql, please check if either one work in mssql 
-Notes: 
-1) datediff(MONTH, sd, ed) is not working on MySQL. MySQL can use timestampdiff(Month, sd, ed)
-
-2) I think using datediff or timestampdiff doesn't really reflect on month because it only count 11 monthes for the first member
-but it is more realistic if it counts as 12
-
-3) we also need to count those whose work doesn't have end date (null), that means currently working.
-According to the test data, all of alumni works more than 6 months, so I suggest to change the description to 
-'more than or equal to 12 months' so we can filter out one record
-
-*/
--- So this one is most prefer, dividing the date difference by 30.5 days a month (average day of month in a year) and then round it.
--- see if this works in MSSQL
--- 4 records retrieved
--- Yenny: now change to use Month, Year which should be supported by MSSQL. This one should return 11 month same as DATEDIFF(MONTH, date, date).
--- Can you please try again?
 SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
 FROM Member m
 JOIN (
@@ -203,74 +163,14 @@ ON m.MemberID = aw.AlumnusID
 AND MonthsWorking >= 12;
 
 
-/*This version only works on ms sql*/
-SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
-FROM Member m
-JOIN (
-    SELECT AlumnusID, Company, StartDate, Enddate, (DATEDIFF(Month, EndDate, StartDate) * -1) AS MonthsWorking
-    FROM Alumnus_WorkHistory
-    WHERE EndDate IS NOT NULL
-    UNION
-    SELECT AlumnusID, Company, StartDate, Enddate, (DATEDIFF(Month, SYSDATETIME(), StartDate) * -1) AS MonthsWorking
-    FROM Alumnus_WorkHistory
-    WHERE EndDate IS NULL
-) aw
-ON m.MemberID = aw.AlumnusID
-AND MonthsWorking >= 12;
-
-SELECT *
-FROM Alumnus_WorkHistory;
-
--- this one using timestampdiff and work in MySQL, but it count 11 months for first member, so it is filtered out
--- 3 records retrieved
--- Hector: maybe just do the query above then?
--- Yenny: TIMESTAMPDIFF not work on MSSQL, then we just ignore this.
--- SELECT FirstName, LastName, Company, StartDate, EndDate, MonthsWorking
--- FROM Member m
--- JOIN (
---     SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, EndDate) AS MonthsWorking
---     FROM Alumnus_WorkHistory
---     WHERE EndDate IS NOT NULL
---     UNION
---     SELECT AlumnusID, Company, StartDate, Enddate, TIMESTAMPDIFF(MONTH, StartDate, SYSDATE()) AS MonthsWorking
---     FROM Alumnus_WorkHistory
---     WHERE EndDate IS NULL
--- ) aw
--- ON m.MemberID = aw.AlumnusID
--- AND MonthsWorking >= 12;
-
-
 /* --------------------------------------------------------------------------------------------------
 14. A view on past events.
 ----------------------------------------------------------------------------------------------------*/
--- CREATE VIEW Past_Events AS
--- SELECT EventID, EventSubject, EventDate
--- FROM Event
--- WHERE EventDate < SYSDATETIME();
-
-
--- Yenny: 
--- SYSDATETIME not support in MySQL, SYSDATE can return datetime in MySQL using below SQL. Does SYSDATE also
--- show time on MSSQL? Hector: yes, but it is not very important if it does show time or not.
--- Yenny: Now change to CURRENT_TIMESTAMP and should work on MSSQL, can ou please try again?
 CREATE VIEW Past_Events AS
 SELECT EventID, EventSubject, EventDate
 FROM Event
 WHERE EventDate < CURRENT_TIMESTAMP;
 
-SELECT *
-FROM Past_Events;
-
-DROP VIEW Past_Events;
-
-SELECT *
-FROM Event;
-
-/*This query only works on ms sql*/
-CREATE VIEW Past_Events AS
-SELECT EventID, EventSubject, EventDate
-FROM Event
-WHERE EventDate < SYSDATETIME();
 
 /* --------------------------------------------------------------------------------------------------
 15. An alumnus quits a job.
